@@ -27,6 +27,12 @@
     <ClCompile Include="ZeroFilling.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="NotchFiltering.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ZeroDeleting.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="declarations.h">

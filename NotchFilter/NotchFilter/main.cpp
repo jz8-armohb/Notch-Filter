@@ -38,7 +38,6 @@ int main(int argc, char* argv[])
     unsigned char* notchYBuff = new unsigned char[w * h];
     unsigned char* notchUBuff = new unsigned char[w * h];
     unsigned char* notchVBuff = new unsigned char[w * h];
-    unsigned char* tempYBuff = new unsigned char[w * h];
     unsigned char* tempYBuff_Re = new unsigned char[wFFT * hFFT];
     unsigned char* tempYBuff_Im = new unsigned char[wFFT * hFFT];
 
@@ -52,27 +51,57 @@ int main(int argc, char* argv[])
     {
         for (int j = 0; j < w; j++)
         {
-            tempYBuff[i * w + j] = oriYBuff[i * w + j];
+            notchYBuff[i * w + j] = oriYBuff[i * w + j];
         }
     }
 
     /* Frequency spectrum centring */
-    FreqSpecCentring(tempYBuff, w, h); 
+    FreqSpecCentring(notchYBuff, w, h); 
 
     /* Fill image buffer with zeros in order to apply FFT correctly */
-    ZeroFilling(tempYBuff, tempYBuff_Re, w, h, wFFT, hFFT);
+    ZeroFilling(notchYBuff, tempYBuff_Re, w, h, wFFT, hFFT);
 
-    /* FFT */
+    /* 2-D FFT */
     FFT_2D(tempYBuff_Re, tempYBuff_Re, wFFT, hFFT);
 
     /* Notch filtering */
+    NotchFiltering(0.2, tempYBuff_Re, tempYBuff_Im, wFFT, hFFT);
 
+    /* 2-D IFFT */
+    for (int i = 0; i < hFFT; i++)
+    {
+        for (int j = 0; j < wFFT; j++)
+        {
+            tempYBuff_Im[i * w + j] = -tempYBuff_Im[i * w + j];
+        }
+    }
+    FFT_2D(tempYBuff_Re, tempYBuff_Im, wFFT, hFFT);
+    for (int i = 0; i < hFFT; i++)
+    {
+        for (int j = 0; j < wFFT; j++)
+        {
+            printf("-4%d ", tempYBuff_Re[i * w + j]);
+            tempYBuff_Re[i * w + j] = (tempYBuff_Re[i * w + j]) / (double(wFFT * hFFT));
+            printf("-4%d\n", tempYBuff_Im[i * w + j]);
+        }
+    }
 
+    /* Extract the top-left chunk by original size */
+    ZeroDeleting(tempYBuff_Re, notchYBuff, wFFT, hFFT, w, h);
+
+    /* Decentring */
+    FreqSpecCentring(notchYBuff, w, h);
+
+    /* Write filtered data into file */
+    fwrite(notchYBuff, sizeof(unsigned char), w * h, notchImgPtr);
+    fwrite(notchUBuff, sizeof(unsigned char), w * h, notchImgPtr);
+    fwrite(notchVBuff, sizeof(unsigned char), w * h, notchImgPtr);
+
+    /* Close file pointers and free the memory */
     delete[]oriYBuff;
     delete[]notchYBuff;
     delete[]notchUBuff;
     delete[]notchVBuff;
-    delete[]tempYBuff;
     delete[]tempYBuff_Re;
     delete[]tempYBuff_Im;
     fclose(oriImgPtr);
