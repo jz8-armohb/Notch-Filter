@@ -41,10 +41,6 @@ int main(int argc, char* argv[])
     unsigned char* tempYBuff_Re = new unsigned char[wFFT * hFFT];
     unsigned char* tempYBuff_Im = new unsigned char[wFFT * hFFT];
 
-    /* Initialisation of U & V component (greyscale image) */
-    memset(notchUBuff, 128, w * h);
-    memset(notchVBuff, 128, w * h);
-
     /* Read Y component into the buffer, and make a backup */
     fread(oriYBuff, sizeof(unsigned char), w * h, oriImgPtr);
     for (int i = 0; i < h; i++)
@@ -65,7 +61,7 @@ int main(int argc, char* argv[])
     FFT_2D(tempYBuff_Re, tempYBuff_Re, wFFT, hFFT);
 
     /* Notch filtering */
-    NotchFiltering(0.2, tempYBuff_Re, tempYBuff_Im, wFFT, hFFT);
+    //NotchFiltering(0.2, tempYBuff_Re, tempYBuff_Im, wFFT, hFFT);
 
     /* 2-D IFFT */
     for (int i = 0; i < hFFT; i++)
@@ -80,9 +76,9 @@ int main(int argc, char* argv[])
     {
         for (int j = 0; j < wFFT; j++)
         {
-            printf("-4%d ", tempYBuff_Re[i * w + j]);
-            tempYBuff_Re[i * w + j] = (tempYBuff_Re[i * w + j]) / (double(wFFT * hFFT));
-            printf("-4%d\n", tempYBuff_Im[i * w + j]);
+            //printf("-4%d ", tempYBuff_Re[i * w + j]);
+            tempYBuff_Re[i * w + j] = (tempYBuff_Re[i * w + j]) * (double(wFFT * hFFT));
+            //printf("-4%d\n", tempYBuff_Im[i * w + j]);
         }
     }
 
@@ -92,8 +88,20 @@ int main(int argc, char* argv[])
     /* Decentring */
     FreqSpecCentring(notchYBuff, w, h);
 
+    /* Test */
+    for (int i = 100; i < 103; i++)
+    {
+        for (int j = 0; j < w; j++)
+        {
+            printf("%-4d\n", tempYBuff_Re[i * w + j]);
+        }
+    }
+
+
     /* Write filtered data into file */
     fwrite(notchYBuff, sizeof(unsigned char), w * h, notchImgPtr);
+    memset(notchUBuff, 128, w * h);
+    memset(notchVBuff, 128, w * h);
     fwrite(notchUBuff, sizeof(unsigned char), w * h, notchImgPtr);
     fwrite(notchVBuff, sizeof(unsigned char), w * h, notchImgPtr);
 

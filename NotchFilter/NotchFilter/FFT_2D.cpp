@@ -173,6 +173,19 @@ void fft_butterfly(int n, double* A_re, double* A_im, double* W_re, double* W_im
 	}
 }
 
+double Overflow(double value, int thresholdLower, int thresholdUpper)
+{
+	if (value > thresholdUpper)
+	{
+		return thresholdUpper;
+	}
+
+	if (value < thresholdLower)
+	{
+		return thresholdLower;
+	}
+
+}
 
 void FFT_2D(unsigned char* reBuff, unsigned char* imBuff, int w, int h)
 {
@@ -220,6 +233,8 @@ void FFT_2D(unsigned char* reBuff, unsigned char* imBuff, int w, int h)
 		/* Recover */
 		for (int i = 0; i < h; i++)
 		{
+			//Overflow(colReBuff[i], 0, 255);
+			//Overflow(colImBuff[i], 0, 255);
 			reBuff[i * w + j] = (unsigned char)colReBuff[i];
 			imBuff[i * w + j] = (unsigned char)colImBuff[i];
 		}
