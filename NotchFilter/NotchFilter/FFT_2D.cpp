@@ -174,4 +174,56 @@ void fft_butterfly(int n, double* A_re, double* A_im, double* W_re, double* W_im
 }
 
 
-//void FFT_2D
+void FFT_2D(unsigned char* reBuff, unsigned char* imBuff, int w, int h)
+{
+	/* Row FFT */
+	double* rowReBuff = new double[w];
+	double* rowImBuff = new double[w];
+	for (int i = 0; i < h; i++)
+	{
+		for (int j = 0; j < w; j++)
+		{
+			/* Extract 1 row from the original buffer */
+			rowReBuff[j] = (double)reBuff[i * w + j];
+			rowImBuff[j] = (double)imBuff[i * w + j];
+		}
+
+		/* Apply FFT */
+		FFT_1D(w, rowReBuff, rowImBuff);
+
+		/* Recover */
+		for (int j = 0; j < w; j++)
+		{
+			reBuff[i * w + j] = rowReBuff[j];
+			imBuff[i * w + j] = rowImBuff[j];
+		}
+	}
+	delete[]rowReBuff;
+	delete[]rowImBuff;
+
+
+	/* Column FFT */
+	double* colReBuff = new double[h];
+	double* colImBuff = new double[h];
+	for (int j = 0; j < w; j++)
+	{
+		for (int i = 0; i < h; i++)
+		{
+			/* Extract 1 column from the original buffer */
+			colReBuff[i] = reBuff[i * w + j];
+			colImBuff[i] = imBuff[i * w + j];
+		}
+
+		/* Apply FFT */
+		FFT_1D(h, colReBuff, colImBuff);
+
+		/* Recover */
+		for (int i = 0; i < h; i++)
+		{
+			reBuff[i * w + j] = (unsigned char)colReBuff[i];
+			imBuff[i * w + j] = (unsigned char)colImBuff[i];
+		}
+	}
+	delete[]colReBuff;
+	delete[]colImBuff;
+}

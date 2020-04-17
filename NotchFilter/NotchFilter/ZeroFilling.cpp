@@ -2,9 +2,9 @@
 #include "declarations.h"
 using namespace std;
 
-void ZeroFilling(unsigned char* oriBuff, unsigned char* newBuff,int wOri, int wNew, int hOri, int hNew)
+void ZeroFilling(unsigned char* oriBuff, unsigned char* newBuff, int wOri, int hOri, int wNew, int hNew)
 {
-	//memset(newBuff, 0, wNew * hNew);
+	memset(newBuff, 0, wNew * hNew);
 
 	for (int i = 0; i < hOri; i++)
 	{
