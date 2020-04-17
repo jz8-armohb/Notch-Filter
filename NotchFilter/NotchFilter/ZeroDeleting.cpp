@@ -2,7 +2,7 @@
 #include "declarations.h"
 using namespace std;
 
-void ZeroDeleting(unsigned char* buff, unsigned char* extrBuff, int w, int h, int wExtr, int hExtr)
+void ZeroDeleting(double* buff, double* extrBuff, int w, int h, int wExtr, int hExtr)
 {
 	for (int i = 0; i < hExtr; i++)
 	{

@@ -3,7 +3,7 @@
 #include "declarations.h"
 using namespace std;
 
-void FreqSpecCentring(unsigned char* imgBuff, int w, int h)
+void FreqSpecCentring(double* imgBuff, int w, int h)
 {
 	for (int i = 0; i < h; i++)
 	{

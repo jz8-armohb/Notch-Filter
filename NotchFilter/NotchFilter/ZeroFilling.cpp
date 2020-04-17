@@ -2,7 +2,7 @@
 #include "declarations.h"
 using namespace std;
 
-void ZeroFilling(unsigned char* oriBuff, unsigned char* newBuff, int wOri, int hOri, int wNew, int hNew)
+void ZeroFilling(double* oriBuff, double* newBuff, int wOri, int hOri, int wNew, int hNew)
 {
 	memset(newBuff, 0, wNew * hNew);
 

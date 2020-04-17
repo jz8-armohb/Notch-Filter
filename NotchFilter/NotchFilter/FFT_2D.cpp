@@ -14,6 +14,109 @@ void fft_butterfly(int n, double* A_re, double* A_im, double* W_re, double* W_im
 void FFT_1D(int N, double* A_re, double* A_im);
 
 
+void FFT_2D(double* reBuff, double* imBuff, int w, int h)
+{
+	/* Row FFT */
+	double* rowReArr = new double[w];
+	double* rowImArr = new double[w];
+	for (int i = 0; i < h; i++)
+	{
+		for (int j = 0; j < w; j++)
+		{
+			/* Extract 1 row from the original buffer */
+			rowReArr[j] = reBuff[i * w + j];
+			rowImArr[j] = imBuff[i * w + j];
+		}
+
+		/* Apply FFT */
+		FFT_1D(w, rowReArr, rowImArr);
+
+		/* Recover */
+		for (int j = 0; j < w; j++)
+		{
+			reBuff[i * w + j] = rowReArr[j];
+			imBuff[i * w + j] = rowImArr[j];
+		}
+	}
+	delete[]rowReArr;
+	delete[]rowImArr;
+
+
+	/* Column FFT */
+	double* colReArr = new double[h];
+	double* colImArr = new double[h];
+	for (int j = 0; j < w; j++)
+	{
+		for (int i = 0; i < h; i++)
+		{
+			/* Extract 1 column from the original buffer */
+			colReArr[i] = reBuff[i * w + j];
+			colImArr[i] = imBuff[i * w + j];
+		}
+
+		/* Apply FFT */
+		FFT_1D(h, colReArr, colImArr);
+
+		/* Recover */
+		for (int i = 0; i < h; i++)
+		{
+			reBuff[i * w + j] = colReArr[i];
+			imBuff[i * w + j] = colImArr[i];
+		}
+	}
+	delete[]colReArr;
+	delete[]colImArr;
+}
+
+void fft_2d(int w, int h, double* A_re, double* A_im)
+{
+	double* rowArr_Re = new double[w];
+	double* rowArr_Im = new double[w];
+	double* colArr_Re = new double[h];
+	double* colArr_Im = new double[h];
+
+	/* Row FFT */
+	for (int i = 0; i < h; i++)
+	{
+		for (int j = 0; j < w; j++)
+		{
+			/* Extract 1 column from the original buffer */
+			rowArr_Re[j] = A_re[j + w * i];
+			rowArr_Im[j] = A_im[j + w * i];
+		}
+		FFT_1D(w, rowArr_Re, rowArr_Im);
+		for (int j = 0; j < w; j++)
+		{
+			/* Recover */
+			A_re[j + w * i] = rowArr_Re[j];
+			A_im[j + w * i] = rowArr_Im[j];
+		}
+	}
+
+	/* Column FFT */
+	for (int i = 0; i < w; i++)
+	{
+		for (int j = 0; j < h; j++)
+		{
+			/* Extract 1 column from the original buffer */
+			colArr_Re[j] = A_re[i + w * j];
+			colArr_Im[j] = A_im[i + w * j];
+		}
+		FFT_1D(w, colArr_Re, colArr_Im);
+		for (int j = 0; j < h; j++)
+		{
+			/* Recover */
+			A_re[i + w * j] = colArr_Re[j];
+			A_im[i + w * j] = colArr_Im[j];
+		}
+	}
+
+	delete[]rowArr_Re;
+	delete[]rowArr_Im;
+	delete[]colArr_Re;
+	delete[]colArr_Im;
+}
+
 
 /*********************************************************************************************
 对N点序列进行fft变换：
@@ -171,74 +274,4 @@ void fft_butterfly(int n, double* A_re, double* A_im, double* W_re, double* W_im
 			}
 		}
 	}
-}
-
-double Overflow(double value, int thresholdLower, int thresholdUpper)
-{
-	if (value > thresholdUpper)
-	{
-		return thresholdUpper;
-	}
-
-	if (value < thresholdLower)
-	{
-		return thresholdLower;
-	}
-
-}
-
-void FFT_2D(unsigned char* reBuff, unsigned char* imBuff, int w, int h)
-{
-	/* Row FFT */
-	double* rowReBuff = new double[w];
-	double* rowImBuff = new double[w];
-	for (int i = 0; i < h; i++)
-	{
-		for (int j = 0; j < w; j++)
-		{
-			/* Extract 1 row from the original buffer */
-			rowReBuff[j] = (double)reBuff[i * w + j];
-			rowImBuff[j] = (double)imBuff[i * w + j];
-		}
-
-		/* Apply FFT */
-		FFT_1D(w, rowReBuff, rowImBuff);
-
-		/* Recover */
-		for (int j = 0; j < w; j++)
-		{
-			reBuff[i * w + j] = rowReBuff[j];
-			imBuff[i * w + j] = rowImBuff[j];
-		}
-	}
-	delete[]rowReBuff;
-	delete[]rowImBuff;
-
-
-	/* Column FFT */
-	double* colReBuff = new double[h];
-	double* colImBuff = new double[h];
-	for (int j = 0; j < w; j++)
-	{
-		for (int i = 0; i < h; i++)
-		{
-			/* Extract 1 column from the original buffer */
-			colReBuff[i] = reBuff[i * w + j];
-			colImBuff[i] = imBuff[i * w + j];
-		}
-
-		/* Apply FFT */
-		FFT_1D(h, colReBuff, colImBuff);
-
-		/* Recover */
-		for (int i = 0; i < h; i++)
-		{
-			//Overflow(colReBuff[i], 0, 255);
-			//Overflow(colImBuff[i], 0, 255);
-			reBuff[i * w + j] = (unsigned char)colReBuff[i];
-			imBuff[i * w + j] = (unsigned char)colImBuff[i];
-		}
-	}
-	delete[]colReBuff;
-	delete[]colImBuff;
 }

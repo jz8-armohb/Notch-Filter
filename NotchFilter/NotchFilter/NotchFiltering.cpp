@@ -2,7 +2,7 @@
 #include "declarations.h"
 using namespace std;
 
-void NotchFiltering(double C, unsigned char* reBuff, unsigned char* imBuff ,int wFFT, int hFFT)
+void NotchFiltering(double C, double* reBuff, double* imBuff ,int wFFT, int hFFT)
 {
 	for (int i = 0; i < hFFT; i++)
 	{

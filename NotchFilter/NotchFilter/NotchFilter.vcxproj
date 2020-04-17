@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="FFT_2D.cpp" />
     <ClCompile Include="FreqSpecCentring.cpp" />
+    <ClCompile Include="IFFT_2D.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NotchFiltering.cpp" />
     <ClCompile Include="ZeroDeleting.cpp" />
