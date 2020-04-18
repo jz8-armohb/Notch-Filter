@@ -46,33 +46,18 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    /* (1) Centre the frequency spectrum & add a margin of zeros */
-    //FreqSpecCentring(tempYBuff, w, h); 
-    for (int i = 0; i < hFFT; i++) {
-        for (int j = 0; j < wFFT; j++) {
-            if ((i < h) && (j < w)) {
-                tempYBuff_Re[i * wFFT + j] = tempYBuff[i * w + j] * pow(-1, i + j);
-                tempYBuff_Im[i * wFFT + j] = 0;
-            } else {
-                tempYBuff_Re[i * wFFT + j] = 0;
-                tempYBuff_Im[i * wFFT + j] = 0;
-            }
-        }
-    }
+    /* (1) Pre-processing */
+    Preprocessing(tempYBuff, tempYBuff_Re, tempYBuff_Im, w, h, wFFT, hFFT);
 
     /* (2) 2-D FFT */
-    //ZeroFilling(tempYBuff, tempYBuff_Re, w, h, wFFT, hFFT); // Fill image buffer with zeros in order to apply FFT correctly
-    //memset(tempYBuff_Im, 0, wFFT * hFFT);
     FFT_2D(wFFT, hFFT, tempYBuff_Re, tempYBuff_Im);
     /******************************************** Test ********************************************/
     //for (int i = 100; i < 103; i++) {
     //    for (int j = 0; j < wFFT; j++) {
-    //        printf("%-4.3lf\n", tempYBuff_Im[i * w + j]);
+    //        printf("%10.3lf%10.3lf\n", tempYBuff_Re[i * w + j], tempYBuff_Im[i * w + j]);
     //    }
     //}
     /******************************************** Test ********************************************/
-
-
 
     /* (3) Notch filtering */
     //NotchFiltering(0.5, tempYBuff_Re, tempYBuff_Im, wFFT, hFFT);
@@ -80,19 +65,8 @@ int main(int argc, char* argv[]) {
     /* (4) 2-D IFFT */
     IFFT_2D(wFFT, hFFT, tempYBuff_Re, tempYBuff_Im);
 
-    /* (5) Extract the top-left chunk by original size */
-    ZeroDeleting(tempYBuff_Re, tempYBuff, wFFT, hFFT, w, h);
-
-    /* (6) Decentring */
-    FreqSpecCentring(tempYBuff, w, h);
-
-    /* Convert to unsigned char */
-    for (int i = 0; i < h; i++) {
-        for (int j = 0; j < w; j++) {
-            Overflow(tempYBuff[i * w + j], 0, 255);
-            notchYBuff[i * w + j] = (unsigned char)tempYBuff[i * w + j];
-        }
-    }
+    /* (5) Post-processing */
+    Postprocessing(tempYBuff, tempYBuff_Re, notchYBuff, w, h, wFFT, hFFT);
 
     /* Write filtered data into file */
     fwrite(notchYBuff, sizeof(unsigned char), w * h, notchImgPtr);

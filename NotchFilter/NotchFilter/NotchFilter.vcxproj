@@ -148,12 +148,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FFT_2D.cpp" />
-    <ClCompile Include="FreqSpecCentring.cpp" />
     <ClCompile Include="IFFT_2D.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NotchFiltering.cpp" />
-    <ClCompile Include="ZeroDeleting.cpp" />
-    <ClCompile Include="ZeroFilling.cpp" />
+    <ClCompile Include="Postprocessing.cpp" />
+    <ClCompile Include="Preprocessing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="declarations.h" />

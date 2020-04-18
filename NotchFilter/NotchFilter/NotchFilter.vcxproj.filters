@@ -18,22 +18,19 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="FreqSpecCentring.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="FFT_2D.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ZeroFilling.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="NotchFiltering.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ZeroDeleting.cpp">
+    <ClCompile Include="IFFT_2D.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="IFFT_2D.cpp">
+    <ClCompile Include="Preprocessing.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Postprocessing.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
