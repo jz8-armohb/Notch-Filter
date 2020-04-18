@@ -2,23 +2,16 @@
 #include "declarations.h"
 using namespace std;
 
-void NotchFiltering(double C, double* reBuff, double* imBuff ,int wFFT, int hFFT)
-{
-	for (int i = 0; i < hFFT; i++)
-	{
-		for (int j = 0; j < wFFT; j++)
-		{
-			reBuff[i * wFFT + j] *= (1 + C);
+void NotchFiltering(double parameter, double* reBuff, double* imBuff ,int wFFT, int hFFT) {
+	for (int i = 0; i < hFFT; i++) {
+		for (int j = 0; j < wFFT; j++) {
+			if ((i == (hFFT / 2 - 1)) && (j == (wFFT / 2 - 1))) {
+				reBuff[i * wFFT + j] *= parameter;
+				imBuff[i * wFFT + j] *= parameter;
+			} else {
+				reBuff[i * wFFT + j] *= (1 + parameter);
+				imBuff[i * wFFT + j] *= (1 + parameter);
+			}
 		}
 	}
-	reBuff[hFFT / 2 * wFFT + wFFT / 2] *= C;
-
-	for (int i = 0; i < hFFT; i++)
-	{
-		for (int j = 0; j < wFFT; j++)
-		{
-			imBuff[i * wFFT + j] *= (1 + C);
-		}
-	}
-	imBuff[hFFT / 2 * wFFT + wFFT / 2] *= C;
 }

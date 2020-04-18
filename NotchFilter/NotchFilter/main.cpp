@@ -3,8 +3,7 @@
 #include "declarations.h"
 using namespace std;
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     double Overflow(double value, int thresholdLower, int thresholdUpper);
 
     FILE* oriImgPtr;
@@ -17,21 +16,15 @@ int main(int argc, char* argv[])
     int hFFT = 1024;
 
     /* Open the files */
-    if (fopen_s(&oriImgPtr, oriImgName, "rb") == 0)
-    {
+    if (fopen_s(&oriImgPtr, oriImgName, "rb") == 0) {
         cout << "Successfully opened \"" << oriImgName << "\".\n";
-    }
-    else
-    {
+    } else {
         cout << "Failed to open \"" << oriImgName << "\".\n";
         exit(-1);
     }
-    if (fopen_s(&notchImgPtr, notchImgName, "wb") == 0)
-    {
+    if (fopen_s(&notchImgPtr, notchImgName, "wb") == 0) {
         cout << "Successfully opened \"" << notchImgName << "\".\n";
-    }
-    else
-    {
+    } else {
         cout << "Failed to open \"" << notchImgName << "\".\n";
         exit(-1);
     }
@@ -47,27 +40,20 @@ int main(int argc, char* argv[])
 
     /* Read Y component into the buffer, and make a backup */
     fread(oriYBuff, sizeof(unsigned char), w * h, oriImgPtr);
-    for (int i = 0; i < h; i++)
-    {
-        for (int j = 0; j < w; j++)
-        {
+    for (int i = 0; i < h; i++) {
+        for (int j = 0; j < w; j++) {
             tempYBuff[i * w + j] = oriYBuff[i * w + j];
         }
     }
 
     /* (1) Centre the frequency spectrum & add a margin of zeros */
     //FreqSpecCentring(tempYBuff, w, h); 
-    for (int i = 0; i < hFFT; i++)
-    {
-        for (int j = 0; j < wFFT; j++)
-        {
-            if ((i < h) && (j < w))
-            {
+    for (int i = 0; i < hFFT; i++) {
+        for (int j = 0; j < wFFT; j++) {
+            if ((i < h) && (j < w)) {
                 tempYBuff_Re[i * wFFT + j] = tempYBuff[i * w + j] * pow(-1, i + j);
                 tempYBuff_Im[i * wFFT + j] = 0;
-            }
-            else
-            {
+            } else {
                 tempYBuff_Re[i * wFFT + j] = 0;
                 tempYBuff_Im[i * wFFT + j] = 0;
             }
@@ -77,35 +63,22 @@ int main(int argc, char* argv[])
     /* (2) 2-D FFT */
     //ZeroFilling(tempYBuff, tempYBuff_Re, w, h, wFFT, hFFT); // Fill image buffer with zeros in order to apply FFT correctly
     //memset(tempYBuff_Im, 0, wFFT * hFFT);
-    //FFT_2D(tempYBuff_Re, tempYBuff_Im, wFFT, hFFT);
-    fft_2d(wFFT, hFFT, tempYBuff_Re, tempYBuff_Im);
+    FFT_2D(wFFT, hFFT, tempYBuff_Re, tempYBuff_Im);
     /******************************************** Test ********************************************/
-    for (int i = 100; i < 103; i++)
-    {
-        for (int j = 0; j < wFFT; j++)
-        {
-            printf("%-4.3lf\n", tempYBuff_Im[i * w + j]);
-        }
-    }
+    //for (int i = 100; i < 103; i++) {
+    //    for (int j = 0; j < wFFT; j++) {
+    //        printf("%-4.3lf\n", tempYBuff_Im[i * w + j]);
+    //    }
+    //}
     /******************************************** Test ********************************************/
 
 
 
     /* (3) Notch filtering */
-    //NotchFiltering(0, tempYBuff_Re, tempYBuff_Im, wFFT, hFFT);
+    //NotchFiltering(0.5, tempYBuff_Re, tempYBuff_Im, wFFT, hFFT);
 
     /* (4) 2-D IFFT */
-    for (int i = 0; i < hFFT * wFFT; i++)
-    {
-        tempYBuff_Im[i] = -tempYBuff_Im[i];
-    }
-    //FFT_2D(tempYBuff_Re, tempYBuff_Im, wFFT, hFFT);
-    fft_2d(wFFT, hFFT, tempYBuff_Re, tempYBuff_Im);
-    for (int i = 0; i < hFFT * wFFT; i++)
-    {
-        tempYBuff_Re[i] = tempYBuff_Re[i] / wFFT / hFFT;
-    }
-    //IFFT_2D(wFFT, hFFT, tempYBuff_Re, tempYBuff_Im);
+    IFFT_2D(wFFT, hFFT, tempYBuff_Re, tempYBuff_Im);
 
     /* (5) Extract the top-left chunk by original size */
     ZeroDeleting(tempYBuff_Re, tempYBuff, wFFT, hFFT, w, h);
@@ -114,26 +87,12 @@ int main(int argc, char* argv[])
     FreqSpecCentring(tempYBuff, w, h);
 
     /* Convert to unsigned char */
-    for (int i = 0; i < h; i++)
-    {
-        for (int j = 0; j < w; j++)
-        {
+    for (int i = 0; i < h; i++) {
+        for (int j = 0; j < w; j++) {
             Overflow(tempYBuff[i * w + j], 0, 255);
             notchYBuff[i * w + j] = (unsigned char)tempYBuff[i * w + j];
         }
     }
-
-
-    /******************************************** Test ********************************************/
-    for (int i = 100; i < 103; i++)
-    {
-        for (int j = 0; j < w; j++)
-        {
-            //printf("%-4d\n", notchYBuff[i * w + j]);
-        }
-    }
-    /******************************************** Test ********************************************/
-
 
     /* Write filtered data into file */
     fwrite(notchYBuff, sizeof(unsigned char), w * h, notchImgPtr);
@@ -147,7 +106,6 @@ int main(int argc, char* argv[])
     delete[]tempYBuff;
     delete[]notchYBuff;
     delete[]notchUBuff;
-
     delete[]notchVBuff;
     delete[]tempYBuff_Re;
     delete[]tempYBuff_Im;
@@ -156,15 +114,13 @@ int main(int argc, char* argv[])
 }
 
 
-double Overflow(double value, int thresholdLower, int thresholdUpper)
-{
-    if (value > thresholdUpper)
-    {
+
+double Overflow(double value, int thresholdLower, int thresholdUpper) {
+    if (value > thresholdUpper) {
         return thresholdUpper;
     }
 
-    if (value < thresholdLower)
-    {
+    if (value < thresholdLower) {
         return thresholdLower;
     }
 }
