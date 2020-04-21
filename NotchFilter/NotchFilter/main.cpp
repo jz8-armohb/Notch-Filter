@@ -4,8 +4,6 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    double Overflow(double value, int thresholdLower, int thresholdUpper);
-
     FILE* oriImgPtr;
     FILE* notchImgPtr;
     const char* oriImgName = argv[1];
@@ -60,7 +58,7 @@ int main(int argc, char* argv[]) {
     /******************************************** Test ********************************************/
 
     /* (3) Notch filtering */
-    //NotchFiltering(0.5, tempYBuff_Re, tempYBuff_Im, wFFT, hFFT);
+    NotchFiltering(0.5, tempYBuff_Re, tempYBuff_Im, wFFT, hFFT);
 
     /* (4) 2-D IFFT */
     IFFT_2D(wFFT, hFFT, tempYBuff_Re, tempYBuff_Im);
@@ -85,16 +83,4 @@ int main(int argc, char* argv[]) {
     delete[]tempYBuff_Im;
     fclose(oriImgPtr);
     fclose(notchImgPtr);
-}
-
-
-
-double Overflow(double value, int thresholdLower, int thresholdUpper) {
-    if (value > thresholdUpper) {
-        return thresholdUpper;
-    }
-
-    if (value < thresholdLower) {
-        return thresholdLower;
-    }
 }
