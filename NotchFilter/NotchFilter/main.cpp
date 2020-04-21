@@ -8,10 +8,16 @@ int main(int argc, char* argv[]) {
     FILE* notchImgPtr;
     const char* oriImgName = argv[1];
     const char* notchImgName = argv[2];
-    int w = 464;
-    int h = 538;
+    /* Specification for moon.yuv */
+    //int w = 464;
+    //int h = 538;
+    //int wFFT = 512;
+    //int hFFT = 1024;
+    /* Specification for seed.yuv */
+    int w = 500;
+    int h = 500;
     int wFFT = 512;
-    int hFFT = 1024;
+    int hFFT = 512;
 
     /* Open the files */
     if (fopen_s(&oriImgPtr, oriImgName, "rb") == 0) {
